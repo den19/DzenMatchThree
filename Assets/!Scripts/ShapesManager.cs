@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public class ShapesManager : MonoBehaviour
 {
-    public Text DebugText, ScoreText;
+    public Text DebugText, ScoreText, LevelText;
     public bool ShowDebugInfo = false;
     //candy graphics taken from http://opengameart.org/content/candy-pack-1
 
@@ -17,7 +17,7 @@ public class ShapesManager : MonoBehaviour
 
     private int score;
 
-    public readonly Vector2 BottomRight = new Vector2(-2.37f, -4.27f);
+    public Vector2 BottomRight;
     public readonly Vector2 CandySize = new Vector2(0.7f, 0.7f);
 
     private GameState state = GameState.None;
@@ -46,14 +46,62 @@ public class ShapesManager : MonoBehaviour
     {
         InitializeTypesOnPrefabShapesAndBonuses();
 
+        InitializeLevelFromGameManager();
+
         InitializeCandyAndSpawnPositions();
 
         StartCheckForPotentialMatches();
     }
 
+    private void InitializeLevelFromGameManager()
+    {
+        if (GameManager.Instance != null)
+        {
+            var levelConfig = GameManager.Instance.GetCurrentLevelConfig();
+            if (levelConfig != null)
+            {
+                Constants.Rows = levelConfig.rows;
+                Constants.Columns = levelConfig.columns;
+                
+                if (LevelText != null && GameManager.Instance.levelConfiguration != null)
+                {
+                    int currentLevel = System.Array.FindIndex(GameManager.Instance.levelConfiguration.levels, 
+                        l => l.sceneName == UnityEngine.SceneManagement.SceneManager.GetActiveScene().name) + 1;
+                    if (currentLevel > 0)
+                    {
+                        LevelText.text = "Уровень: " + currentLevel.ToString();
+                    }
+                }
+            }
+        }
+    }
+
     public void DoQuit()
     {
-        Application.Quit();
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.QuitGame();
+        }
+        else
+        {
+            Application.Quit();
+        }
+    }
+
+    public void ReturnToMainMenu()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.LoadMainMenu();
+        }
+    }
+
+    public void RestartLevel()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.RestartCurrentLevel();
+        }
     }
 
     /// <summary>
@@ -468,12 +516,23 @@ public class ShapesManager : MonoBehaviour
     {
         score = 0;
         ShowScore();
+
+        // Динамическое центрирование игрового поля по ширине и высоте экрана.
+        // Центрируем по горизонтали в X = 0, по вертикали в Y = -0.5 (оставляя место сверху под HUD)
+        float startX = 0f - ((Constants.Columns - 1) * CandySize.x) / 2f;
+        float startY = -0.5f - ((Constants.Rows - 1) * CandySize.y) / 2f;
+        BottomRight = new Vector2(startX, startY);
     }
 
     private void IncreaseScore(int amount)
     {
         score += amount;
         ShowScore();
+        
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.SetScore(score);
+        }
     }
 
     private void ShowScore()
