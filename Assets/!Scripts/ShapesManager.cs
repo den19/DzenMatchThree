@@ -537,7 +537,25 @@ public class ShapesManager : MonoBehaviour
 
     private void ShowScore()
     {
-        ScoreText.text = "Счёт: " + score.ToString();
+        int levelNum = 1;
+        int rows = 6;
+        int columns = 6;
+        int target = 1400;
+
+        if (GameManager.Instance != null)
+        {
+            levelNum = GameManager.Instance.GetCurrentLevelIndex() + 1;
+            var config = GameManager.Instance.GetCurrentLevelConfig();
+            if (config != null)
+            {
+                rows = config.rows;
+                columns = config.columns;
+                target = config.scoreThreshold;
+            }
+        }
+
+        // Стильный вывод: Уровень 1 (6x6)  |  Счёт: 250 / 1400
+        ScoreText.text = $"Уровень {levelNum} <color=#E0E0E0>({columns}x{rows})</color>  |  Счёт: {score} <color=#FFFFFF>/ {target}</color>";
     }
 
     /// <summary>

@@ -45,6 +45,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public int GetCurrentLevelIndex()
+    {
+        return currentLevelIndex;
+    }
+
     public LevelConfiguration.LevelData GetCurrentLevelConfig()
     {
         if (levelConfiguration != null && currentLevelIndex < levelConfiguration.levels.Length)
