@@ -239,6 +239,9 @@ public class ShapesManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Если на экране висит окно завершения уровня — блокируем любые действия и игровой цикл
+        if (GameObject.Find("CompletionOverlay") != null) return;
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             DoQuit();
