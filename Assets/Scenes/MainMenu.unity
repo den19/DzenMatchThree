@@ -393,6 +393,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   levelConfiguration: {fileID: 0}
+  level1ScoreThreshold: 3000
+  level2ScoreThreshold: 6000
+  level3ScoreThreshold: 8000
 --- !u!4 &843600533
 Transform:
   m_ObjectHideFlags: 0

@@ -12,5 +12,6 @@ public class LevelConfiguration : ScriptableObject
         public int columns;
         public int scoreThreshold;
         public string sceneName;
+        public bool enableHints = true;
     }
 }

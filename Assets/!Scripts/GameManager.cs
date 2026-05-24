@@ -6,6 +6,17 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     public LevelConfiguration levelConfiguration;
+
+    [Header("Настройки лимитов очков (Баланс)")]
+    [Tooltip("Количество очков для прохождения Уровня 1")]
+    public int level1ScoreThreshold = 1400;
+
+    [Tooltip("Количество очков для прохождения Уровня 2")]
+    public int level2ScoreThreshold = 3000;
+
+    [Tooltip("Количество очков для прохождения Уровня 3")]
+    public int level3ScoreThreshold = 4400;
+
     private int currentLevelIndex = 0;
     private int currentScore = 0;
 
@@ -22,9 +33,9 @@ public class GameManager : MonoBehaviour
                 levelConfiguration = ScriptableObject.CreateInstance<LevelConfiguration>();
                 levelConfiguration.levels = new LevelConfiguration.LevelData[]
                 {
-                    new LevelConfiguration.LevelData { rows = 6, columns = 6, scoreThreshold = 700, sceneName = "Level1" },
-                    new LevelConfiguration.LevelData { rows = 8, columns = 8, scoreThreshold = 1500, sceneName = "Level2" },
-                    new LevelConfiguration.LevelData { rows = 10, columns = 10, scoreThreshold = 2200, sceneName = "Level3" }
+                    new LevelConfiguration.LevelData { rows = 6, columns = 6, scoreThreshold = level1ScoreThreshold, sceneName = "Level1", enableHints = false },
+                    new LevelConfiguration.LevelData { rows = 7, columns = 6, scoreThreshold = level2ScoreThreshold, sceneName = "Level2", enableHints = true },
+                    new LevelConfiguration.LevelData { rows = 8, columns = 6, scoreThreshold = level3ScoreThreshold, sceneName = "Level3", enableHints = false }
                 };
             }
         }
@@ -105,10 +116,29 @@ public class GameManager : MonoBehaviour
 
     public void QuitGame()
     {
-        Application.Quit();
-        
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        try
+        {
+            using (AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+            {
+                AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+                if (activity != null)
+                {
+                    activity.Call("finishAndRemoveTask");
+                    return;
+                }
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("Error trying to finish and remove task: " + e.Message);
+        }
+#endif
+
+        Application.Quit();
     }
 }

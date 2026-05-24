@@ -571,6 +571,23 @@ public class ShapesManager : MonoBehaviour
     private void StartCheckForPotentialMatches()
     {
         StopCheckForPotentialMatches();
+
+        // Проверяем, включены ли подсказки для текущего уровня
+        bool hintsEnabled = true;
+        if (GameManager.Instance != null)
+        {
+            var config = GameManager.Instance.GetCurrentLevelConfig();
+            if (config != null)
+            {
+                hintsEnabled = config.enableHints;
+            }
+        }
+
+        if (!hintsEnabled)
+        {
+            return; // Выходим, если подсказки отключены
+        }
+
         //get a reference to stop it later
         CheckPotentialMatchesCoroutine = CheckPotentialMatches();
         StartCoroutine(CheckPotentialMatchesCoroutine);
