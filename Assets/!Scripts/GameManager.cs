@@ -94,7 +94,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                ShowCompletionPopup($"Вы прошли уровень Уровень {currentLevelIndex + 1}!", false);
+                ShowCompletionPopup($"Вы прошли Уровень {currentLevelIndex + 1}!", false);
             }
         }
     }
